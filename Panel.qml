@@ -17,97 +17,161 @@ Item {
 
     anchors.fill: parent
 
-    // Hardcoded for now
-    property var projects: [
-        {
-            name: "Quantum Simulator"
-        },
-        {
-            name: "Crypto Price Aggregator"
-        },
-        {
-            name: "Project Manager Plugin"
-        }
-    ]
+    property var projects: pluginApi?.pluginSettings?.projects || []
+    property bool showAddDialog: false
+
+    function addProject(name) {
+        var updated  = projects.slice()
+        updated.push({ name: name })
+        pluginApi.pluginSettings.projects = updated
+        pluginApi.saveSettings()
+        projects = updated
+    }
+
+    function removeProject(index) {
+        var updated = projects.slice()
+        updated.splice(index, 1)
+        pluginApi.pluginSettings.projects = updated
+        pluginApi.saveSettings()
+        projects = updated
+    }
 
     Rectangle {
         id: panelContainer
         anchors.fill: parent
         color: "transparent"
 
-        ColumnLayout {
+        Loader {
             anchors.fill: parent
-            anchors.margins: Style.marginM
-            spacing: Style.marginM
+            sourceComponent: root.showAddDialog ? addDialogComponent : projectListComponent
+        }
 
-            RowLayout {
+        Component {
+            id: projectListComponent
+
+            ColumnLayout {
+                anchors.fill: parent
+                anchors.margins: Style.marginM
+                spacing: Style.marginM
+
+                RowLayout {
+                    anchors {
+                        left: parent.left
+                        right: parent.right
+                    }
+
+                    Text {
+                        text: "Projects"
+                        font.pointSize: Style.fontSizeL
+                        font.weight: Font.Medium
+                        color: Color.mOnSurface
+                    }
+
+                    NIconButton {
+                        icon: "plus"
+                        baseSize: Style.baseWidgetSize * 0.8
+
+                        onClicked: root.showAddDialog = true
+                    }
+                }
+
+                ListView {
+                    property var buttonSize: 0.8
+
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    spacing: Style.marginL
+                    model: projects
+
+                    delegate: Rectangle {
+                        width: ListView.view.width
+                        height: itemLayout.implicitHeight + Style.marginM * 2
+                        color: Color.mSurfaceVariant
+                        radius: 8
+                        border.color: Color.mOutline
+                        border.width: 1
+
+                        ColumnLayout {
+                            id: itemLayout
+                            anchors {
+                                left: parent.left
+                                right: parent.right
+                                top: parent.top
+                                margins: Style.marginM
+                            }
+                            spacing: Style.marginM
+
+                            RowLayout {
+                                Layout.fillWidth: true
+
+                                NText {
+                                    Layout.fillWidth: true
+                                    text: modelData.name
+                                    font.pointSize: font.fontSizeM
+                                }
+
+                                NIconButton {
+                                    icon: "brand-github"
+                                    baseSize: Style.baseWidgetSize * buttonSize
+                                }
+
+                                NIconButton {
+                                    icon: "folder"
+                                    baseSize: Style.baseWidgetSize * buttonSize
+                                }
+
+                                NIconButton {
+                                    icon: "trash"
+                                    baseSize: Style.baseWidgetSize * buttonSize
+
+                                    onClicked: root.removeProject(index)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Component {
+            id: addDialogComponent
+
+            ColumnLayout {
+                id: dialogLayout
                 anchors {
                     left: parent.left
                     right: parent.right
+                    top: parent.top
+                    margins: Style.marginL
+                }
+                spacing: Style.marginM
+
+                NText {
+                    text: "New project"
                 }
 
-                Text {
-                    text: "Projects"
-                    font.pointSize: Style.fontSizeL
-                    font.weight: Font.Medium
-                    color: Color.mOnSurface
+                NTextInput {
+                    id: nameInput
                 }
 
-                NIconButton {
-                    icon: "plus"
-                    baseSize: Style.baseWidgetSize * 0.8
-                }
-            }
+                RowLayout {
+                    Layout.fillWidth: true
 
-            ListView {
-                property var buttonSize: 0.8
-
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                spacing: Style.marginL
-                model: projects
-
-                delegate: Rectangle {
-                    width: ListView.view.width
-                    height: itemLayout.implicitHeight + Style.marginM * 2
-                    color: Color.mSurfaceVariant
-                    radius: 8
-                    border.color: Color.mOutline
-                    border.width: 1
-
-                    ColumnLayout {
-                        id: itemLayout
-                        anchors {
-                            left: parent.left
-                            right: parent.right
-                            top: parent.top
-                            margins: Style.marginM
+                    NButton {
+                        text: "Cancel"
+                        onClicked: {
+                            root.showAddDialog = false
+                            nameInput.text = ""
                         }
-                        spacing: Style.marginM
+                    }
 
-                        RowLayout {
-                            Layout.fillWidth: true
-
-                            NText {
-                                Layout.fillWidth: true
-                                text: modelData.name
-                                font.pointSize: font.fontSizeM
-                            }
-
-                            NIconButton {
-                                icon: "brand-github"
-                                baseSize: Style.baseWidgetSize * buttonSize
-                            }
-
-                            NIconButton {
-                                icon: "folder"
-                                baseSize: Style.baseWidgetSize * buttonSize
-                            }
-
-                            NIconButton {
-                                icon: "trash"
-                                baseSize: Style.baseWidgetSize * buttonSize
-                            }
+                    NButton {
+                        text: "Save"
+                        enabled: nameInput.text.trim() !== ""
+                        onClicked: {
+                            root.addProject(nameInput.text.trim())
+                            root.showAddDialog = false
+                            nameInput.text = ""
                         }
                     }
                 }

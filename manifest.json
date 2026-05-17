@@ -8,5 +8,10 @@
   "entryPoints": {
     "barWidget": "BarWidget.qml",
     "panel": "Panel.qml"
+  },
+  "metadata": {
+    "defaultSettings": {
+      "projects": []
+    }
   }
 }
