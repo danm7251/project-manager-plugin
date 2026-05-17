@@ -1,0 +1,11 @@
+{
+  "id": "project-manager",
+  "name": "Project Manager",
+  "version": "0.1.0",
+  "minNoctaliaVersion": "3.6.0",
+  "author": "d7251",
+  "description": "test",
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  }
+}
