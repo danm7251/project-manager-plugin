@@ -6,6 +6,7 @@
   "author": "d7251",
   "description": "test",
   "entryPoints": {
-    "barWidget": "BarWidget.qml"
+    "barWidget": "BarWidget.qml",
+    "panel": "Panel.qml"
   }
 }
