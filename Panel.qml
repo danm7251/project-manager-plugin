@@ -154,6 +154,28 @@ Item {
                     id: nameInput
                 }
 
+                // Optional
+                // Will have a graphical selector as well
+                Item {
+                    Layout.fillWidth: true
+                    implicitHeight: pathInput.implicitHeight
+
+                    NTextInput {
+                        id: pathInput
+                        anchors.fill: parent
+                    }
+
+                    NIconButton {
+                        icon: "folder-open"
+                        anchors {
+                            right: parent.right
+                            verticalCenter: parent.verticalCenter
+                            rightMargin: 3
+                            // rightMargin: Style.marginS
+                        }
+                    }
+                }
+
                 RowLayout {
                     Layout.fillWidth: true
 
